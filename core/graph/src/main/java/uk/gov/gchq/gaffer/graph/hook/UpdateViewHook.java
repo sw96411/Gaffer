@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Crown Copyright
+ * Copyright 2018-2019 Crown Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package uk.gov.gchq.gaffer.graph.hook;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.collections.CollectionUtils;
 
+import uk.gov.gchq.gaffer.data.elementdefinition.view.NamedView;
 import uk.gov.gchq.gaffer.data.elementdefinition.view.View;
 import uk.gov.gchq.gaffer.data.elementdefinition.view.ViewElementDefinition;
 import uk.gov.gchq.gaffer.operation.Operation;
@@ -60,6 +60,7 @@ import java.util.Set;
  * @see GraphHook
  * @see uk.gov.gchq.gaffer.store.schema.Schema#visibilityProperty
  */
+@JsonPropertyOrder(alphabetic = true)
 public class UpdateViewHook implements GraphHook {
 
     public static final boolean ADD_EXTRA_GROUPS_DEFAULT = false;
@@ -106,8 +107,11 @@ public class UpdateViewHook implements GraphHook {
     }
 
     protected final View.Builder mergeView(final OperationView operationView, final View viewToMerge) {
-        View.Builder viewBuilder = new View.Builder()
-                .merge(operationView.getView());
+        final View.Builder viewBuilder = new View.Builder();
+
+        if (!(operationView.getView() instanceof NamedView)) {
+            viewBuilder.merge(operationView.getView());
+        }
 
         if (null != viewToMerge) {
             viewBuilder.merge(viewToMerge.clone());
@@ -176,79 +180,65 @@ public class UpdateViewHook implements GraphHook {
         return result;
     }
 
-    @JsonGetter("withOpAuth")
     public Set<String> getWithOpAuth() {
         return withOpAuth;
     }
 
-    @JsonSetter("withOpAuth")
     public UpdateViewHook setWithOpAuth(final Set<String> withOpAuth) {
         this.withOpAuth = withOpAuth;
         return this;
     }
 
-    @JsonGetter("withoutOpAuth")
     public Set<String> getWithoutOpAuth() {
         return withoutOpAuth;
     }
 
-    @JsonSetter("withoutOpAuth")
     public UpdateViewHook setWithoutOpAuth(final Set<String> withoutOpAuth) {
         this.withoutOpAuth = withoutOpAuth;
         return this;
     }
 
-    @JsonGetter("withDataAuth")
     public Set<String> getWithDataAuth() {
         return withDataAuth;
     }
 
-    @JsonSetter("withDataAuth")
     public UpdateViewHook setWithDataAuth(final Set<String> withDataAuth) {
         this.withDataAuth = withDataAuth;
         return this;
     }
 
-    @JsonGetter("withoutDataAuth")
     public Set<String> getWithoutDataAuth() {
         return withoutDataAuth;
     }
 
-    @JsonSetter("withoutDataAuth")
     public UpdateViewHook setWithoutDataAuth(final Set<String> withoutDataAuth) {
         this.withoutDataAuth = withoutDataAuth;
         return this;
     }
 
-    @JsonGetter("whiteListElementGroups")
     public Set<String> getWhiteListElementGroups() {
         return whiteListElementGroups;
     }
 
-    @JsonSetter("whiteListElementGroups")
     public UpdateViewHook setWhiteListElementGroups(final Set<String> whiteListElementGroups) {
         this.whiteListElementGroups = whiteListElementGroups;
         return this;
     }
 
-    @JsonGetter("blackListElementGroups")
     public Set<String> getBlackListElementGroups() {
         return blackListElementGroups;
     }
 
-    @JsonSetter("blackListElementGroups")
     public UpdateViewHook setBlackListElementGroups(final Set<String> blackListElementGroups) {
         this.blackListElementGroups = blackListElementGroups;
         return this;
     }
 
-    @JsonSetter("viewToMerge")
     public UpdateViewHook setViewToMerge(final View viewToMerge) {
         this.viewToMerge = null != viewToMerge ? viewToMerge.toCompactJson() : null;
         return this;
     }
 
-    @JsonGetter("viewToMerge")
     public View getViewToMerge() {
         return null != viewToMerge ? View.fromJson(viewToMerge) : null;
     }

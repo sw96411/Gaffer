@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Crown Copyright
+ * Copyright 2017-2019 Crown Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import static uk.gov.gchq.gaffer.operation.util.OperationUtil.extractNextOp;
 @Since("1.5.0")
 @Summary("Repeatedly executes an operation while a condition is met")
 @JsonPropertyOrder(value = {"class", "input", "conditional", "operation", "maxRepeats", "options"}, alphabetic = true)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class While<I, O> extends GenericInput<I> implements InputOutput<I, O>,
         Operations<Operation> {
 
@@ -104,8 +105,8 @@ public class While<I, O> extends GenericInput<I> implements InputOutput<I, O>,
         return builder.build();
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public Collection<Operation> getOperations() {
         final List<Operation> ops = new LinkedList<>();
 
@@ -179,7 +180,6 @@ public class While<I, O> extends GenericInput<I> implements InputOutput<I, O>,
         return conditional;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public int getMaxRepeats() {
         return maxRepeats;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Crown Copyright
+ * Copyright 2016-2019 Crown Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,8 @@ public class CsvGenerator implements OneToOneObjectGenerator<String> {
             final Object value = getFieldValue(element, field);
             if (null != value) {
                 strBuilder.append(quoteString(value));
-                strBuilder.append(COMMA);
             }
+            strBuilder.append(COMMA);
         }
 
         if (!constants.isEmpty()) {

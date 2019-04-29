@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Crown Copyright
+ * Copyright 2017-2019 Crown Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package uk.gov.gchq.gaffer.store.operation.add;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.exception.CloneFailedException;
 
@@ -69,10 +70,12 @@ public class AddStorePropertiesToLibrary implements Operation {
                 .build();
     }
 
+    @JsonIgnore
     public StoreProperties getStoreProperties() {
         return storeProperties;
     }
 
+    @JsonIgnore
     public void setStoreProperties(final StoreProperties properties) {
         this.storeProperties = properties;
     }
