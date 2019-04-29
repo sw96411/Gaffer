@@ -95,7 +95,7 @@ public class AddElementsHandler implements OperationHandler<AddElements> {
                         + "/reversed-group=" + group
                         + "/partition=" + partitionId;
         LOGGER.info("Calling WriteUnsortedData to add elements");
-        LOGGER.info("currentGraphPartitioner is {}", currentGraphPartitioner);
+        LOGGER.trace("currentGraphPartitioner is {}", currentGraphPartitioner);
         new WriteUnsortedData(store, currentGraphPartitioner,
                 directoryForGroupAndPartitionId, directoryForGroupAndPartitionIdForReversedEdges)
                 .writeElements(addElementsOperation.getInput());
@@ -122,7 +122,7 @@ public class AddElementsHandler implements OperationHandler<AddElements> {
                 inputFiles.add(store.getFile(group, partition));
                 final String outputDir = directoryForSortedResultsForGroupAndPartitionId.apply(group, partition.getPartitionId());
                 final AggregateAndSortData task = new AggregateAndSortData(schemaUtils, fs, inputFiles, outputDir,
-                        group, group + "-" + partition.getPartitionId(), false, spark);
+                        group, group + "-" + partition.getPartitionId(), false, store.getProperties().getCompressionCodecName(), spark);
                 tasks.add(task);
                 LOGGER.info("Created AggregateAndSortData task for group {}, partition {}", group, partition.getPartitionId());
             }
@@ -137,7 +137,7 @@ public class AddElementsHandler implements OperationHandler<AddElements> {
                 inputFiles.add(store.getFileForReversedEdges(group, partition));
                 final String outputDir = directoryForSortedResultsForGroupAndPartitionIdForReversedEdges.apply(group, partition.getPartitionId());
                 final AggregateAndSortData task = new AggregateAndSortData(schemaUtils, fs, inputFiles, outputDir,
-                        group, "reversed-" + group + "-" + partition.getPartitionId(), true, spark);
+                        group, "reversed-" + group + "-" + partition.getPartitionId(), true, store.getProperties().getCompressionCodecName(), spark);
                 tasks.add(task);
                 LOGGER.info("Created AggregateAndSortData task for reversed edge group {}, partition {}", group, partition.getPartitionId());
             }
@@ -166,17 +166,17 @@ public class AddElementsHandler implements OperationHandler<AddElements> {
             LOGGER.info("Moving aggregated and sorted data to new snapshot directory {}", newDataDir);
             fs.mkdirs(new Path(newDataDir));
             for (final String group : schema.getGroups()) {
-                final Path groupDir = new Path(newDataDir, "group=" + group);
+                final Path groupDir = new Path(newDataDir, ParquetStore.getGroupSubDir(group, false));
                 fs.mkdirs(groupDir);
                 LOGGER.info("Created directory {}", groupDir);
             }
             for (final String group : schema.getEdgeGroups()) {
-                final Path groupDir = new Path(newDataDir, ParquetStore.REVERSED_GROUP + "=" + group);
+                final Path groupDir = new Path(newDataDir, ParquetStore.getGroupSubDir(group, true));
                 fs.mkdirs(groupDir);
                 LOGGER.info("Created directory {}", groupDir);
             }
             for (final String group : schema.getGroups()) {
-                final String groupDir = newDataDir + "/group=" + group;
+                final String groupDir = newDataDir + "/" + ParquetStore.getGroupSubDir(group, false);
                 final List<Partition> partitions = currentGraphPartitioner.getGroupPartitioner(group).getPartitions();
                 for (final Partition partition : partitions) {
                     final Path outputDir = new Path(directoryForSortedResultsForGroupAndPartitionId.apply(group, partition.getPartitionId()));
@@ -199,7 +199,7 @@ public class AddElementsHandler implements OperationHandler<AddElements> {
                 }
             }
             for (final String group : schema.getEdgeGroups()) {
-                final String groupDir = newDataDir + "/reversed-group=" + group;
+                final String groupDir = newDataDir + "/" + ParquetStore.getGroupSubDir(group, true);
                 final List<Partition> partitions = currentGraphPartitioner.getGroupPartitionerForReversedEdges(group).getPartitions();
                 for (final Partition partition : partitions) {
                     final Path outputDir = new Path(directoryForSortedResultsForGroupAndPartitionIdForReversedEdges.apply(group, partition.getPartitionId()));

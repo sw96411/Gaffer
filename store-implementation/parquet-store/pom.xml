@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2017-2018 Crown Copyright
+  ~ Copyright 2017-2019 Crown Copyright
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
     <parent>
         <groupId>uk.gov.gchq.gaffer</groupId>
         <artifactId>store-implementation</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>parquet-store</artifactId>
@@ -42,6 +42,8 @@
             <artifactId>spark-library</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>uk.gov.gchq.gaffer</groupId>
             <artifactId>integration-test</artifactId>
@@ -52,6 +54,13 @@
         <dependency>
             <groupId>uk.gov.gchq.gaffer</groupId>
             <artifactId>graph</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.gchq.gaffer</groupId>
+            <artifactId>store</artifactId>
             <version>${project.parent.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
